@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="vi" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Lab - Chuyển Đổi & Tính Toán Nhị Phân</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        code: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        techCyan: '#0284c7',
+                        techIndigo: '#4f46e5',
+                        techPurple: '#7c3aed',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & FontAwesome Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Ultra Clean Light Tech Background & Grid */
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(2, 132, 199, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(99, 102, 241, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.04) 0%, transparent 50%),
+                linear-gradient(to right, rgba(203, 213, 225, 0.4) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(203, 213, 225, 0.4) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+            background-attachment: fixed;
+        }
+
+        .font-code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Glassmorphism Pure White Pearl Cards */
+        .tech-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px -5px rgba(148, 163, 184, 0.15),
+                        0 8px 10px -6px rgba(2, 132, 199, 0.04);
+        }
+
+        .tech-card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tech-card-hover:hover {
+            transform: translateY(-2px);
+            border-color: #38bdf8;
+            box-shadow: 0 20px 30px -10px rgba(2, 132, 199, 0.18);
+        }
+
+        .tech-input {
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            color: #0f172a;
+            transition: all 0.2s ease;
+        }
+        .tech-input:focus {
+            border-color: #0284c7;
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12);
+            outline: none;
+            background: #ffffff;
+        }
+
+        /* Bright Gradients */
+        .text-gradient-primary {
+            background: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Light Subversive Pattern Watermark */
+        .binary-bg-watermark {
+            position: fixed;
+            font-family: 'Fira Code', monospace;
+            font-size: 12px;
+            color: rgba(148, 163, 184, 0.18);
+            user-select: none;
+            pointer-events: none;
+            line-height: 1.3;
+            z-index: 0;
+        }
+
+        /* Custom Light Scrollbars */
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.9; transform: scale(1.03); }
+        }
+        .animate-bit-active {
+            animation: pulseGlow 2.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500 selection:text-white relative">
+
+    <!-- Ambient Circuit & Matrix Watermarks (Light Gray) -->
+    <div class="binary-bg-watermark top-16 left-6 hidden lg:block">
+        01001001 01001110 01010100 01000101 01001100<br>
+        01010100 01000101 01000011 01001000 00110001<br>
+        11010010 10101101 00101010 11010101 10101011
+    </div>
+    <div class="binary-bg-watermark top-36 right-8 hidden lg:block text-right">
+        10101100 11001010 10110011<br>
+        01101001 01101110 01100110<br>
+        01101111 01110010 01101101
+    </div>
+
+    <div class="relative z-10">
+        <!-- Top Navigation Header (Pure Light) -->
+        <header class="border-b border-slate-200/90 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col lg:flex-row justify-between items-center gap-4">
+                
+                <!-- Brand Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+                        <i class="fa-solid fa-microchip text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-2xl font-extrabold text-gradient-primary tracking-tight">BINARY LAB</h1>
+                            <span class="text-[10px] font-bold tracking-widest px-2.5 py-0.5 rounded-full bg-sky-100 text-sky-800 border border-sky-200 uppercase">
+                                v3.0 Ultra Light
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 font-medium">Chuyển đổi & Tính toán nhị phân trực quan</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs Menu (Light Buttons) -->
+                <nav class="flex p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200 text-xs sm:text-sm w-full lg:w-auto overflow-x-auto shadow-inner">
+                    <button id="nav-btn-converter" onclick="switchTab('converter')" 
+                            class="flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 bg-white text-sky-700 shadow-md shadow-slate-200 border border-sky-200">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span class="whitespace-nowrap">Chuyển Đổi</span>
+                    </button>
+                    <button id="nav-btn-calculator" onclick="switchTab('calculator')" 
+                            class="flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-calculator"></i>
+                        <span class="whitespace-nowrap">Phép Tính</span>
+                    </button>
+                    <button id="nav-btn-reference" onclick="switchTab('reference')" 
+                            class="flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span class="whitespace-nowrap">Tra Cứu</span>
+                    </button>
+                    <button id="nav-btn-quiz" onclick="switchTab('quiz')" 
+                            class="flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                        <span class="whitespace-nowrap">Luyện Tập</span>
+                    </button>
+                    <button id="nav-btn-guide" onclick="switchTab('guide')" 
+                            class="flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span class="whitespace-nowrap">Hướng Dẫn</span>
+                    </button>
+                </nav>
+
+            </div>
+        </header>
+
+        <!-- Main Body Content Container -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+            
+            <!-- TAB 1: BASE CONVERTER -->
+            <section id="tab-converter" class="space-y-8">
+                
+                <!-- Inputs Section Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Decimal Card (Base 10) -->
+                    <div class="tech-card tech-card-hover p-6 rounded-3xl border-l-4 border-l-sky-500 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-sm font-bold text-sky-800 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-ping"></span>
+                                HỆ THẬP PHÂN (DECIMAL)
+                            </label>
+                            <span class="text-xs font-code font-bold px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">Base-10</span>
+                        </div>
+
+                        <div class="relative">
+                            <input type="number" id="input-dec" placeholder="Nhập số thập phân (vd: 13, 255)..." min="0" value="13"
+                                class="w-full tech-input text-2xl font-code font-bold p-4 rounded-2xl text-slate-800 placeholder-slate-400">
+                        </div>
+
+                        <!-- Presets & Copy -->
+                        <div class="mt-4 flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="text-xs text-slate-500 font-medium mr-1">Mẫu nhanh:</span>
+                                <button onclick="setDecimalPreset(13)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-xs font-semibold text-slate-600 border border-slate-200 transition">13</button>
+                                <button onclick="setDecimalPreset(42)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-xs font-semibold text-slate-600 border border-slate-200 transition">42</button>
+                                <button onclick="setDecimalPreset(255)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-xs font-semibold text-slate-600 border border-slate-200 transition">255</button>
+                                <button onclick="setDecimalPreset(1024)" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-sky-50 hover:text-sky-700 text-xs font-semibold text-slate-600 border border-slate-200 transition">1024</button>
+                            </div>
+                            <button onclick="copyToClipboard('input-dec')" class="text-xs font-semibold text-slate-600 hover:text-sky-600 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/70 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                                <i class="fa-regular fa-copy"></i> Sao chép
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Binary Card (Base 2) -->
+                    <div class="tech-card tech-card-hover p-6 rounded-3xl border-l-4 border-l-indigo-500 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-sm font-bold text-indigo-800 flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 animate-ping"></span>
+                                HỆ NHỊ PHÂN (BINARY)
+                            </label>
+                            <span class="text-xs font-code font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">Base-2</span>
+                        </div>
+
+                        <div class="relative">
+                            <input type="text" id="input-bin" placeholder="Nhập chuỗi 0 và 1 (vd: 1101)..." value="1101"
+                                class="w-full tech-input text-2xl font-code font-bold p-4 rounded-2xl text-slate-800 placeholder-slate-400">
+                        </div>
+
+                        <!-- Actions & Errors -->
+                        <div class="mt-4 flex flex-wrap justify-between items-center gap-2">
+                            <div id="bin-error-msg" class="text-xs text-rose-500 font-semibold hidden flex items-center gap-1">
+                                <i class="fa-solid fa-circle-exclamation"></i> Chỉ cho phép nhập các ký tự 0 và 1!
+                            </div>
+                            <div class="ml-auto flex items-center gap-2">
+                                <button onclick="clearConverterInputs()" class="text-xs font-semibold text-slate-600 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                                    Xóa sạch
+                                </button>
+                                <button onclick="copyToClipboard('input-bin')" class="text-xs font-semibold text-slate-600 hover:text-indigo-600 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/70 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                                    <i class="fa-regular fa-copy"></i> Sao chép
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Interactive 8-Bit Interactive Visualizer -->
+                <div class="tech-card p-6 sm:p-8 rounded-3xl space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-network-wired text-sky-600"></i>
+                                Sơ Đồ Bit Grid Trực Quan (8-Bit Matrix)
+                            </h3>
+                            <p class="text-xs text-slate-500">Bật/tắt trực tiếp từng Bit để đổi giá trị thập phân</p>
+                        </div>
+                        <div class="font-code text-sm px-4 py-2 rounded-2xl bg-slate-100 border border-slate-200 flex items-center gap-2 shadow-inner">
+                            <span class="text-slate-500 font-sans font-medium">Tổng giá trị:</span>
+                            <span id="bit-grid-sum" class="text-xl font-extrabold text-sky-600">13</span>
+                        </div>
+                    </div>
+
+                    <!-- 8-Bit Toggle Grid -->
+                    <div class="grid grid-cols-4 sm:grid-cols-8 gap-3" id="bit-grid-container">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+                <!-- Step-by-Step Mathematical Explanation Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    <!-- Division Steps Box -->
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <i class="fa-solid fa-list-ol text-sky-600 text-lg"></i>
+                            <h4 class="text-base font-bold text-slate-800">Quy Trình: Thập Phân → Nhị Phân (Chia 2 Lấy Dư)</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Chia nguyên cho 2 liên tục, ghi lại phần dư và đọc dãy số dư từ dưới lên trên:</p>
+                        <div id="dec-to-bin-steps" class="max-h-72 overflow-y-auto space-y-2 pr-1 font-code text-xs">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Power Sum Expansion Box -->
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <i class="fa-solid fa-chart-line text-indigo-600 text-lg"></i>
+                            <h4 class="text-base font-bold text-slate-800">Quy Trình: Nhị Phân → Thập Phân (Tổng Trọng Số)</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Nhân từng bit với giá trị vị trí tương ứng (1, 2, 4, 8, 16...) từ phải sang trái rồi cộng lại:</p>
+                        <div id="bin-to-dec-steps" class="space-y-3 font-code text-xs">
+                            <!-- Rendered via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- TAB 2: BINARY CALCULATOR -->
+            <section id="tab-calculator" class="space-y-8 hidden">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Control Settings Panel (Left Column) -->
+                    <div class="lg:col-span-5 tech-card p-6 sm:p-8 rounded-3xl space-y-6">
+                        <div class="border-b border-slate-200 pb-4">
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-sliders text-indigo-600"></i>
+                                Thiết Lập Phép Tính
+                            </h3>
+                            <p class="text-xs text-slate-500">Chọn phép toán trước, sau đó nhập Số A và Số B</p>
+                        </div>
+
+                        <!-- BƯỚC 1: CHỌN PHÉP TOÁN TRƯỚC -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 border border-indigo-200 text-[10px]">Bước 1</span>
+                                Chọn Phép Toán:
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button id="btn-op-add" onclick="setOperation('+')" 
+                                        class="p-4 rounded-2xl font-extrabold flex items-center justify-center gap-2 transition bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/20">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>PHÉP CỘNG (+)</span>
+                                </button>
+                                <button id="btn-op-mul" onclick="setOperation('*')" 
+                                        class="p-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200">
+                                    <i class="fa-solid fa-xmark"></i>
+                                    <span>PHÉP NHÂN (×)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Input Mode Switch -->
+                        <div class="space-y-2 pt-2 border-t border-slate-200">
+                            <label class="block text-xs font-bold text-slate-700">Định Dạng Đầu Vào toán số:</label>
+                            <div class="p-1 bg-slate-100 rounded-2xl border border-slate-200 flex text-xs font-bold">
+                                <button id="calc-mode-bin" onclick="setCalcInputMode('bin')" class="flex-1 py-2 rounded-xl transition text-sky-700 bg-white shadow-sm border border-sky-200">
+                                    Hệ Nhị Phân (Base-2)
+                                </button>
+                                <button id="calc-mode-dec" onclick="setCalcInputMode('dec')" class="flex-1 py-2 rounded-xl transition text-slate-500 hover:text-slate-800">
+                                    Hệ Thập Phân (Base-10)
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BƯỚC 2: NHẬP SỐ A & B -->
+                        <div class="space-y-4">
+                            <label class="block text-xs font-bold text-indigo-800 uppercase tracking-wider flex items-center gap-1.5">
+                                <span class="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-800 border border-indigo-200 text-[10px]">Bước 2</span>
+                                Nhập Các Toán Số:
+                            </label>
+
+                            <!-- Operand A -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-semibold text-slate-700" id="lbl-calc-a">Toán số A (Nhị Phân):</label>
+                                <input type="text" id="calc-a" value="1011" placeholder="Nhập số A..."
+                                    class="w-full tech-input p-3.5 rounded-2xl font-code text-lg font-bold text-slate-800">
+                                <div id="calc-a-equiv" class="text-xs font-code text-slate-500">Tương đương Thập Phân: <span class="text-sky-600 font-bold">11</span></div>
+                            </div>
+
+                            <!-- Operand B -->
+                            <div class="space-y-1">
+                                <label class="block text-xs font-semibold text-slate-700" id="lbl-calc-b">Toán số B (Nhị Phân):</label>
+                                <input type="text" id="calc-b" value="0101" placeholder="Nhập số B..."
+                                    class="w-full tech-input p-3.5 rounded-2xl font-code text-lg font-bold text-slate-800">
+                                <div id="calc-b-equiv" class="text-xs font-code text-slate-500">Tương đương Thập Phân: <span class="text-sky-600 font-bold">5</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Calculate Execute Button -->
+                        <button onclick="calculateBinaryResult()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-600 to-purple-600 text-white font-extrabold text-base shadow-lg shadow-indigo-500/20 hover:brightness-105 transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>THỰC HIỆN PHÉP TÍNH</span>
+                        </button>
+                    </div>
+
+                    <!-- Vertical Calculation Visualizer (Right Column) -->
+                    <div class="lg:col-span-7 space-y-6">
+                        
+                        <!-- Summary Result Banner -->
+                        <div class="tech-card p-6 rounded-3xl border-t-4 border-t-sky-500">
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Kết Quả Phép Tính Chỉnh Tề</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs text-slate-500 font-medium block mb-1">Hệ Nhị Phân (Base-2)</span>
+                                    <span id="calc-res-bin" class="text-2xl font-code font-extrabold text-sky-600 break-all">10000</span>
+                                </div>
+                                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                                    <span class="text-xs text-slate-500 font-medium block mb-1">Hệ Thập Phân (Base-10)</span>
+                                    <span id="calc-res-dec" class="text-2xl font-code font-extrabold text-indigo-600">16</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vertical Alignment Calculation Board -->
+                        <div class="tech-card p-6 sm:p-8 rounded-3xl space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-square-poll-vertical text-indigo-600"></i>
+                                    <h4 class="text-base font-bold text-slate-800">Mô Phỏng Đặt Tính Cột Dọc</h4>
+                                </div>
+                                <span id="calc-type-tag" class="text-xs font-code font-bold px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+                                    Phép Cộng (+)
+                                </span>
+                            </div>
+
+                            <!-- Vertical Calculation Container -->
+                            <div id="vertical-calc-display" class="bg-slate-50 text-slate-800 p-6 rounded-2xl border border-slate-200 overflow-x-auto shadow-inner">
+                                <!-- Rendered via JS -->
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- TAB 3: REFERENCE -->
+            <section id="tab-reference" class="space-y-8 hidden">
+                
+                <!-- Quick Rules Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="tech-card p-6 rounded-3xl space-y-3 border-l-4 border-l-sky-500">
+                        <h3 class="text-base font-bold text-sky-800 flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle"></i> Quy Tắc Phép Cộng Nhị Phân
+                        </h3>
+                        <ul class="space-y-1.5 font-code text-xs text-slate-700">
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 0 + 0 = <strong class="text-sky-600">0</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 0 + 1 = <strong class="text-sky-600">1</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 1 + 0 = <strong class="text-sky-600">1</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 1 + 1 = <strong class="text-indigo-600">10</strong> (Viết 0, nhớ 1 sang hàng bên trái)</li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 1 + 1 + 1 (có nhớ) = <strong class="text-indigo-600">11</strong> (Viết 1, nhớ 1)</li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card p-6 rounded-3xl space-y-3 border-l-4 border-l-indigo-500">
+                        <h3 class="text-base font-bold text-indigo-800 flex items-center gap-2">
+                            <i class="fa-solid fa-xmark-circle"></i> Quy Tắc Phép Nhân Nhị Phân
+                        </h3>
+                        <ul class="space-y-1.5 font-code text-xs text-slate-700">
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 0 × 0 = <strong class="text-indigo-600">0</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 0 × 1 = <strong class="text-indigo-600">0</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 1 × 0 = <strong class="text-indigo-600">0</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• 1 × 1 = <strong class="text-indigo-600">1</strong></li>
+                            <li class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">• Nhân từng chữ số của thừa số thứ 2, lùi lề trái 1 bit rồi cộng lại.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Reference Table 0 to 31 Grid -->
+                <div class="tech-card p-6 sm:p-8 rounded-3xl space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-table text-sky-600"></i>
+                                Bảng Tra Cứu Giá Trị (0 - 31)
+                            </h3>
+                            <p class="text-xs text-slate-500">Tra cứu nhanh tương quan giữa Thập Phân (Base-10) và Nhị Phân (5 Bit)</p>
+                        </div>
+                        <input type="text" id="ref-search-input" oninput="filterRefTable()" placeholder="Lọc số thập phân hoặc nhị phân..." 
+                            class="tech-input px-4 py-2 rounded-xl text-xs w-full sm:w-64 font-code">
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3" id="ref-table-grid">
+                        <!-- Rendered via JS -->
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 4: PRACTICE & QUIZ -->
+            <section id="tab-quiz" class="space-y-8 hidden">
+                
+                <!-- Score Stats Header Bar -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="tech-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-sky-500">
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase">Tổng Điểm Số</span>
+                            <div id="quiz-score" class="text-3xl font-extrabold text-sky-600 font-code">0</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-xl"><i class="fa-solid fa-trophy"></i></div>
+                    </div>
+
+                    <div class="tech-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-amber-500">
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase">Chuỗi Đúng (Streak)</span>
+                            <div id="quiz-streak" class="text-3xl font-extrabold text-amber-500 font-code">0 🔥</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl"><i class="fa-solid fa-bolt"></i></div>
+                    </div>
+
+                    <div class="tech-card p-5 rounded-2xl flex items-center justify-between border-l-4 border-l-indigo-500">
+                        <div>
+                            <span class="text-xs text-slate-500 font-bold uppercase">Đã Hoàn Thành</span>
+                            <div id="quiz-count" class="text-3xl font-extrabold text-indigo-600 font-code">0</div>
+                        </div>
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl"><i class="fa-solid fa-square-check"></i></div>
+                    </div>
+                </div>
+
+                <!-- Main Interactive Quiz Card -->
+                <div class="tech-card p-6 sm:p-8 rounded-3xl space-y-6 relative overflow-hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-200 pb-4">
+                        <span id="quiz-type-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                            Chuyển Đổi Thập Phân → Nhị Phân
+                        </span>
+                        <button onclick="generateNewQuizQuestion()" class="text-xs font-semibold text-slate-600 hover:text-sky-600 flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/70 px-3 py-1.5 rounded-xl border border-slate-200 transition">
+                            <i class="fa-solid fa-arrows-rotate"></i> Đổi câu hỏi khác
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="space-y-2">
+                        <h3 class="text-slate-500 text-xs font-bold uppercase tracking-wider">Thử Thách Trắc Nghiệm:</h3>
+                        <div id="quiz-question-text" class="text-xl sm:text-2xl font-bold text-slate-800">
+                            Chuyển đổi số thập phân <span class="text-sky-600 font-code">19</span> sang hệ Nhị Phân?
+                        </div>
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="quiz-options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Feedback Output -->
+                    <div id="quiz-feedback-box" class="hidden p-5 rounded-2xl text-sm font-medium space-y-2">
+                        <!-- Rendered via JS -->
+                    </div>
+
+                    <!-- Next Question Action -->
+                    <div class="flex justify-end pt-2">
+                        <button id="btn-next-question" onclick="generateNewQuizQuestion()" class="hidden px-6 py-3 rounded-2xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-extrabold text-sm shadow-md shadow-sky-500/20 hover:brightness-105 transition flex items-center gap-2">
+                            <span>Câu Tiếp Theo</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- TAB 5: USER GUIDE & VIDEO INSTRUCTION -->
+            <section id="tab-guide" class="space-y-8 hidden">
+                
+                <!-- Video Container Card -->
+                <div class="tech-card p-6 sm:p-8 rounded-3xl space-y-6 border-t-4 border-t-sky-500">
+                    <div class="border-b border-slate-200 pb-4">
+                        <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-video text-sky-600"></i>
+                            Video Hướng Dẫn Sử Dụng Ứng Dụng
+                        </h3>
+                        <p class="text-xs text-slate-500">Xem video thực hành chi tiết các thao tác chuyển đổi và tính toán nhị phân</p>
+                    </div>
+
+                    <!-- Video Player Container -->
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 shadow-md flex items-center justify-center">
+                        <video controls class="w-full h-full object-cover">
+                            <source src="input_file_0.mp4" type="video/mp4">
+                            Trình duyệt của bạn không hỗ trợ thẻ video.
+                        </video>
+                    </div>
+                </div>
+
+                <!-- Step-by-Step Written Manual -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <div class="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center font-bold font-code text-sm">1</div>
+                            <h4 class="text-base font-bold text-slate-800">1. Hướng Dẫn Chuyển Đổi Cơ Số</h4>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600 leading-relaxed">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-sky-600 mt-0.5"></i>
+                                <span>Nhập số thập phân bất kỳ vào ô <strong>Decimal</strong> hoặc chuỗi 0,1 vào ô <strong>Binary</strong> để quy đổi tức thì.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-sky-600 mt-0.5"></i>
+                                <span>Sử dụng sơ đồ <strong>Interactive 8-Bit Matrix</strong>: Bật/tắt trực tiếp từng Bit để xem tổng giá trị tương ứng.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-sky-600 mt-0.5"></i>
+                                <span>Quan sát 2 bảng giải thích từng bước (chia 2 lấy dư và tổng lũy thừa) để hiểu rõ bản chất toán học.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <div class="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold font-code text-sm">2</div>
+                            <h4 class="text-base font-bold text-slate-800">2. Hướng Dẫn Phép Tính Nhị Phân</h4>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600 leading-relaxed">
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-600 mt-0.5"></i>
+                                <span><strong>Bước 1:</strong> Chọn phép toán mong muốn: Phép cộng (+) hoặc Phép nhân (×).</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-600 mt-0.5"></i>
+                                <span><strong>Bước 2:</strong> Nhập Số A và Số B (hỗ trợ nhập cả nhị phân hoặc thập phân).</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fa-solid fa-check text-indigo-600 mt-0.5"></i>
+                                <span>Bấm <strong>Thực Hiện Phép Tính</strong> để xem mô phỏng đặt tính dọc có hiển thị Bit nhớ (Carry) và các tích một phần.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold font-code text-sm">3</div>
+                            <h4 class="text-base font-bold text-slate-800">3. Bảng Tra Cứu Nhanh</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Tra cứu nhanh quy tắc tính toán cơ bản và bảng tương quan giá trị từ 0 đến 31. Sử dụng ô tìm kiếm để lọc nhanh số bạn cần tra.
+                        </p>
+                    </div>
+
+                    <div class="tech-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold font-code text-sm">4</div>
+                            <h4 class="text-base font-bold text-slate-800">4. Chế Độ Luyện Tập & Quizzes</h4>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Thử thách bản thân với các câu hỏi trắc nghiệm ngẫu nhiên, tích lũy điểm số và duy trì chuỗi làm đúng (Streak) liên tục!
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 bg-white/80 py-6 mt-12 relative z-10 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 space-y-1">
+            <div class="font-bold text-slate-700">BINARY LAB - Ứng Dụng Chuyển Đổi & Tính Toán Nhị Phân</div>
+            <div>Giao diện Ultra Light Tech • Hỗ trợ học tập Tin học & Khoa học Máy tính</div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast-notify" class="fixed bottom-6 right-6 bg-slate-800 text-white px-5 py-3.5 rounded-2xl font-bold text-sm shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50 border border-slate-700">
+        <i class="fa-solid fa-circle-check text-sky-400 text-lg"></i>
+        <span id="toast-text">Đã sao chép vào bộ nhớ tạm!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let activeTab = 'converter';
+        let currentOperation = '+';
+        let calcInputType = 'bin';
+
+        let quizState = {
+            score: 0,
+            streak: 0,
+            completed: 0,
+            currentQuestion: null,
+            isAnswered: false
+        };
+
+        window.onload = function() {
+            // Attach Event Listeners
+            document.getElementById('input-dec').addEventListener('input', handleDecInput);
+            document.getElementById('input-bin').addEventListener('input', handleBinInput);
+
+            document.getElementById('calc-a').addEventListener('input', handleCalcInputChange);
+            document.getElementById('calc-b').addEventListener('input', handleCalcInputChange);
+
+            // Initial Renders
+            handleDecInput();
+            calculateBinaryResult();
+            renderRefTable();
+            generateNewQuizQuestion();
+        };
+
+        // --- TAB NAVIGATION SWITCHER ---
+        function switchTab(tabName) {
+            activeTab = tabName;
+            const tabs = ['converter', 'calculator', 'reference', 'quiz', 'guide'];
+
+            tabs.forEach(t => {
+                const sec = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`nav-btn-${t}`);
+
+                if (t === tabName) {
+                    sec.classList.remove('hidden');
+                    btn.className = "flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 bg-white text-sky-700 shadow-md shadow-slate-200 border border-sky-200";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "flex-1 lg:flex-none px-4 py-2.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 hover:bg-slate-200/60";
+                }
+            });
+        }
+
+        // --- TAB 1: CONVERTER LOGIC ---
+        function handleDecInput() {
+            const decInput = document.getElementById('input-dec');
+            const binInput = document.getElementById('input-bin');
+            const errEl = document.getElementById('bin-error-msg');
+            errEl.classList.add('hidden');
+
+            let decVal = parseInt(decInput.value, 10);
+
+            if (isNaN(decVal) || decVal < 0) {
+                binInput.value = '';
+                renderBitGrid(0);
+                renderDecToBinSteps(0);
+                renderBinToDecSteps('');
+                return;
+            }
+
+            const binVal = decVal.toString(2);
+            binInput.value = binVal;
+
+            renderBitGrid(decVal);
+            renderDecToBinSteps(decVal);
+            renderBinToDecSteps(binVal);
+        }
+
+        function handleBinInput() {
+            const binInput = document.getElementById('input-bin');
+            const decInput = document.getElementById('input-dec');
+            const errEl = document.getElementById('bin-error-msg');
+            const binStr = binInput.value.trim();
+
+            if (!/^[01]*$/.test(binStr)) {
+                errEl.classList.remove('hidden');
+                return;
+            } else {
+                errEl.classList.add('hidden');
+            }
+
+            if (binStr === '') {
+                decInput.value = '';
+                renderBitGrid(0);
+                renderDecToBinSteps(0);
+                renderBinToDecSteps('');
+                return;
+            }
+
+            const decVal = parseInt(binStr, 2);
+            decInput.value = decVal;
+
+            renderBitGrid(decVal);
+            renderDecToBinSteps(decVal);
+            renderBinToDecSteps(binStr);
+        }
+
+        function setDecimalPreset(val) {
+            document.getElementById('input-dec').value = val;
+            handleDecInput();
+        }
+
+        function clearConverterInputs() {
+            document.getElementById('input-dec').value = '';
+            document.getElementById('input-bin').value = '';
+            handleDecInput();
+        }
+
+        function renderBitGrid(decVal) {
+            const container = document.getElementById('bit-grid-container');
+            container.innerHTML = '';
+            document.getElementById('bit-grid-sum').textContent = decVal;
+
+            for (let i = 7; i >= 0; i--) {
+                const weight = Math.pow(2, i);
+                const bitVal = (decVal >> i) & 1;
+
+                const bitCard = document.createElement('button');
+                bitCard.onclick = () => toggleBitGrid(i);
+
+                if (bitVal === 1) {
+                    bitCard.className = "p-3 rounded-2xl border flex flex-col items-center justify-center transition-all bg-gradient-to-b from-sky-500 to-indigo-600 border-sky-400 text-white shadow-md shadow-sky-500/20 animate-bit-active";
+                } else {
+                    bitCard.className = "p-3 rounded-2xl border flex flex-col items-center justify-center transition-all bg-slate-50 border-slate-200 text-slate-400 hover:border-slate-300 hover:bg-slate-100";
+                }
+
+                bitCard.innerHTML = `
+                    <span class="text-[10px] font-code font-bold ${bitVal === 1 ? 'text-sky-100' : 'text-slate-400'}">2<sup>${i}</sup> (${weight})</span>
+                    <span class="text-2xl font-code font-extrabold mt-1 ${bitVal === 1 ? 'text-white' : 'text-slate-400'}">${bitVal}</span>
+                `;
+
+                container.appendChild(bitCard);
+            }
+        }
+
+        function toggleBitGrid(bitIndex) {
+            let decVal = parseInt(document.getElementById('input-dec').value, 10) || 0;
+            const mask = 1 << bitIndex;
+            decVal = decVal ^ mask;
+            document.getElementById('input-dec').value = decVal;
+            handleDecInput();
+        }
+
+        function renderDecToBinSteps(decVal) {
+            const container = document.getElementById('dec-to-bin-steps');
+            container.innerHTML = '';
+
+            if (decVal === 0) {
+                container.innerHTML = `<div class="p-3 bg-slate-50 rounded-2xl text-slate-500 border border-slate-200">Số 0 trong hệ nhị phân có giá trị là 0.</div>`;
+                return;
+            }
+
+            let current = decVal;
+            let stepsHTML = '';
+            let remainders = [];
+
+            while (current > 0) {
+                let quotient = Math.floor(current / 2);
+                let remainder = current % 2;
+                remainders.push(remainder);
+
+                stepsHTML += `
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <span class="text-slate-700 font-semibold">${current} ÷ 2 = <strong class="text-sky-600">${quotient}</strong></span>
+                        <span class="px-2.5 py-0.5 rounded-lg bg-sky-100 text-sky-800 border border-sky-200 font-bold">Dư: ${remainder}</span>
+                    </div>
+                `;
+                current = quotient;
+            }
+
+            const binResult = remainders.reverse().join('');
+            stepsHTML += `
+                <div class="mt-3 p-3 rounded-2xl bg-sky-50 border border-sky-200 text-sky-900 text-xs font-sans">
+                    👉 Đọc các số dư từ dưới lên trên, ta được kết quả: <strong class="text-sky-700 text-sm font-code font-bold">${binResult}</strong>
+                </div>
+            `;
+
+            container.innerHTML = stepsHTML;
+        }
+
+        function renderBinToDecSteps(binStr) {
+            const container = document.getElementById('bin-to-dec-steps');
+            container.innerHTML = '';
+
+            if (!binStr || binStr === '0') {
+                container.innerHTML = `<div class="p-3 bg-slate-50 rounded-2xl text-slate-500 border border-slate-200">0 × 1 = 0</div>`;
+                return;
+            }
+
+            const len = binStr.length;
+            let terms = [];
+            let totalSum = 0;
+
+            for (let i = 0; i < len; i++) {
+                const bit = parseInt(binStr[i], 10);
+                const power = len - 1 - i;
+                const weight = Math.pow(2, power);
+                const val = bit * weight;
+                totalSum += val;
+
+                if (bit === 1) {
+                    terms.push(`<span class="text-indigo-600 font-bold">(1 × ${weight})</span>`);
+                } else {
+                    terms.push(`<span class="text-slate-400">(0 × ${weight})</span>`);
+                }
+            }
+
+            let html = `
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-700 leading-relaxed break-words">
+                    ${terms.join(' + ')}
+                </div>
+                <div class="p-3 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-900 text-xs font-sans">
+                    👉 Tổng tất cả giá trị: <strong class="text-indigo-700 text-sm font-code font-bold">${totalSum}</strong>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // --- TAB 2: CALCULATOR LOGIC ---
+        function setOperation(op) {
+            currentOperation = op;
+            const btnAdd = document.getElementById('btn-op-add');
+            const btnMul = document.getElementById('btn-op-mul');
+
+            if (op === '+') {
+                btnAdd.className = "p-4 rounded-2xl font-extrabold flex items-center justify-center gap-2 transition bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/20";
+                btnMul.className = "p-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200";
+            } else {
+                btnMul.className = "p-4 rounded-2xl font-extrabold flex items-center justify-center gap-2 transition bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20";
+                btnAdd.className = "p-4 rounded-2xl font-bold flex items-center justify-center gap-2 transition bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200";
+            }
+
+            calculateBinaryResult();
+        }
+
+        function setCalcInputMode(mode) {
+            calcInputType = mode;
+            const btnBin = document.getElementById('calc-mode-bin');
+            const btnDec = document.getElementById('calc-mode-dec');
+            const lblA = document.getElementById('lbl-calc-a');
+            const lblB = document.getElementById('lbl-calc-b');
+
+            if (mode === 'bin') {
+                btnBin.className = "flex-1 py-2 rounded-xl transition text-sky-700 bg-white shadow-sm border border-sky-200";
+                btnDec.className = "flex-1 py-2 rounded-xl transition text-slate-500 hover:text-slate-800";
+                lblA.textContent = "Toán số A (Nhị Phân):";
+                lblB.textContent = "Toán số B (Nhị Phân):";
+            } else {
+                btnDec.className = "flex-1 py-2 rounded-xl transition text-sky-700 bg-white shadow-sm border border-sky-200";
+                btnBin.className = "flex-1 py-2 rounded-xl transition text-slate-500 hover:text-slate-800";
+                lblA.textContent = "Toán số A (Thập Phân):";
+                lblB.textContent = "Toán số B (Thập Phân):";
+            }
+
+            handleCalcInputChange();
+            calculateBinaryResult();
+        }
+
+        function handleCalcInputChange() {
+            const rawA = document.getElementById('calc-a').value.trim();
+            const rawB = document.getElementById('calc-b').value.trim();
+            let valA = 0, valB = 0;
+
+            if (calcInputType === 'bin') {
+                valA = parseInt(rawA, 2) || 0;
+                valB = parseInt(rawB, 2) || 0;
+                document.getElementById('calc-a-equiv').innerHTML = `Tương đương Thập Phân: <span class="text-sky-600 font-bold">${valA}</span>`;
+                document.getElementById('calc-b-equiv').innerHTML = `Tương đương Thập Phân: <span class="text-sky-600 font-bold">${valB}</span>`;
+            } else {
+                valA = parseInt(rawA, 10) || 0;
+                valB = parseInt(rawB, 10) || 0;
+                document.getElementById('calc-a-equiv').innerHTML = `Tương đương Nhị Phân: <span class="text-indigo-600 font-bold">${valA.toString(2)}</span>`;
+                document.getElementById('calc-b-equiv').innerHTML = `Tương đương Nhị Phân: <span class="text-indigo-600 font-bold">${valB.toString(2)}</span>`;
+            }
+        }
+
+        function calculateBinaryResult() {
+            const rawA = document.getElementById('calc-a').value.trim();
+            const rawB = document.getElementById('calc-b').value.trim();
+
+            let decA = 0, decB = 0;
+
+            if (calcInputType === 'bin') {
+                decA = parseInt(rawA, 2) || 0;
+                decB = parseInt(rawB, 2) || 0;
+            } else {
+                decA = parseInt(rawA, 10) || 0;
+                decB = parseInt(rawB, 10) || 0;
+            }
+
+            let resDec = 0;
+            if (currentOperation === '+') {
+                resDec = decA + decB;
+            } else {
+                resDec = decA * decB;
+            }
+
+            const binA = decA.toString(2);
+            const binB = decB.toString(2);
+            const resBin = resDec.toString(2);
+
+            document.getElementById('calc-res-bin').textContent = resBin;
+            document.getElementById('calc-res-dec').textContent = resDec;
+
+            if (currentOperation === '+') {
+                document.getElementById('calc-type-tag').textContent = "Phép Cộng (+)";
+                renderVerticalAddition(binA, binB, resBin);
+            } else {
+                document.getElementById('calc-type-tag').textContent = "Phép Nhân (×)";
+                renderVerticalMultiplication(binA, binB, resBin);
+            }
+        }
+
+        // PURE LIGHT Vertical Addition Display
+        function renderVerticalAddition(binA, binB, resBin) {
+            const maxLen = Math.max(binA.length, binB.length);
+            const padA = binA.padStart(maxLen, '0');
+            const padB = binB.padStart(maxLen, '0');
+
+            let carries = [];
+            let carry = 0;
+
+            for (let i = maxLen - 1; i >= 0; i--) {
+                const bitA = parseInt(padA[i], 10);
+                const bitB = parseInt(padB[i], 10);
+                const sum = bitA + bitB + carry;
+                carry = sum >= 2 ? 1 : 0;
+                carries.unshift(carry);
+            }
+            carries.unshift(0);
+
+            let html = `<div class="font-code text-sm sm:text-base space-y-2 inline-block min-w-[240px]">`;
+            
+            // Carry row (Warm Amber/Orange)
+            html += `<div class="text-amber-600 font-bold tracking-widest text-right flex justify-between gap-4 bg-amber-50 p-2 rounded-xl border border-amber-200">
+                        <span class="text-amber-800 font-sans text-xs">Bit nhớ (Carry):</span>
+                        <span>${carries.join(' ')}</span>
+                    </div>`;
+
+            // Operand A
+            html += `<div class="text-sky-700 font-bold tracking-widest text-right flex justify-between gap-4 px-2">
+                        <span class="text-slate-500 font-sans text-xs">Số A:</span>
+                        <span>${padA.split('').join(' ')}</span>
+                    </div>`;
+
+            // Operand B
+            html += `<div class="text-sky-700 font-bold tracking-widest text-right border-b-2 border-slate-300 pb-2 flex justify-between gap-4 px-2">
+                        <span class="text-slate-500 font-sans text-xs">+ Số B:</span>
+                        <span>${padB.split('').join(' ')}</span>
+                    </div>`;
+
+            // Result (Emerald Green)
+            html += `<div class="text-emerald-700 font-extrabold text-base sm:text-lg tracking-widest text-right pt-1 flex justify-between gap-4 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                        <span class="text-emerald-800 font-sans text-xs flex items-center">= Kết quả:</span>
+                        <span>${resBin.split('').join(' ')}</span>
+                    </div>`;
+
+            html += `</div>`;
+
+            document.getElementById('vertical-calc-display').innerHTML = html;
+        }
+
+        // PURE LIGHT Vertical Multiplication Display
+        function renderVerticalMultiplication(binA, binB, resBin) {
+            const lenB = binB.length;
+            let partialProducts = [];
+
+            for (let i = lenB - 1; i >= 0; i--) {
+                const bitB = binB[i];
+                const shift = lenB - 1 - i;
+                if (bitB === '1') {
+                    partialProducts.push({
+                        display: binA + ' '.repeat(shift)
+                    });
+                } else {
+                    partialProducts.push({
+                        display: '0'.repeat(binA.length) + ' '.repeat(shift)
+                    });
+                }
+            }
+
+            let html = `<div class="font-code text-sm sm:text-base space-y-1.5 inline-block min-w-[260px]">`;
+
+            // Operand A
+            html += `<div class="text-sky-700 font-bold tracking-widest text-right flex justify-between gap-4 px-2">
+                        <span class="text-slate-500 font-sans text-xs">Số A:</span>
+                        <span>${binA}</span>
+                    </div>`;
+
+            // Operand B
+            html += `<div class="text-sky-700 font-bold tracking-widest text-right border-b-2 border-slate-300 pb-2 flex justify-between gap-4 px-2">
+                        <span class="text-slate-500 font-sans text-xs">× Số B:</span>
+                        <span>${binB}</span>
+                    </div>`;
+
+            // Partial products (Purple Accent)
+            partialProducts.forEach((p, idx) => {
+                html += `<div class="text-purple-700 font-semibold text-xs tracking-widest text-right flex justify-between gap-4 px-2">
+                            <span class="text-slate-400 font-sans text-[10px]">Tích phần ${idx + 1}:</span>
+                            <span class="bg-purple-50 px-1.5 py-0.5 rounded border border-purple-100">${p.display}</span>
+                        </div>`;
+            });
+
+            // Result
+            html += `<div class="text-emerald-700 font-extrabold text-base sm:text-lg tracking-widest text-right border-t-2 border-slate-300 pt-2 flex justify-between gap-4 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200">
+                        <span class="text-emerald-800 font-sans text-xs flex items-center">= Tích chung:</span>
+                        <span>${resBin}</span>
+                    </div>`;
+
+            html += `</div>`;
+
+            document.getElementById('vertical-calc-display').innerHTML = html;
+        }
+
+        // --- TAB 3: REFERENCE LOGIC ---
+        function renderRefTable() {
+            const container = document.getElementById('ref-table-grid');
+            container.innerHTML = '';
+
+            for (let i = 0; i <= 31; i++) {
+                const binStr = i.toString(2).padStart(5, '0');
+                const card = document.createElement('div');
+                card.className = "ref-item p-3 rounded-2xl bg-white border border-slate-200 hover:border-sky-400 hover:shadow-sm transition text-center space-y-1";
+                card.setAttribute('data-dec', i);
+                card.setAttribute('data-bin', binStr);
+
+                card.innerHTML = `
+                    <div class="text-[10px] text-slate-400 font-bold">DEC</div>
+                    <div class="text-lg font-extrabold text-sky-700 font-code">${i}</div>
+                    <div class="text-[11px] text-indigo-600 font-code font-semibold border-t border-slate-100 pt-1">${binStr}</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function filterRefTable() {
+            const query = document.getElementById('ref-search-input').value.toLowerCase().trim();
+            const items = document.querySelectorAll('.ref-item');
+
+            items.forEach(item => {
+                const dec = item.getAttribute('data-dec');
+                const bin = item.getAttribute('data-bin');
+
+                if (dec.includes(query) || bin.includes(query)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // --- TAB 4: QUIZ LOGIC ---
+        function generateNewQuizQuestion() {
+            quizState.isAnswered = false;
+            
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            feedbackBox.className = "hidden p-5 rounded-2xl text-sm font-medium space-y-2";
+            document.getElementById('btn-next-question').classList.add('hidden');
+
+            const types = ['dec_to_bin', 'bin_to_dec', 'add_bin', 'mul_bin'];
+            const randomType = types[Math.floor(Math.random() * types.length)];
+
+            let questionText = '';
+            let correctAnswer = '';
+            let explanation = '';
+            let options = [];
+
+            if (randomType === 'dec_to_bin') {
+                document.getElementById('quiz-type-badge').textContent = 'Chuyển Đổi: Thập Phân → Nhị Phân';
+                const dec = Math.floor(Math.random() * 30) + 2;
+                correctAnswer = dec.toString(2);
+                questionText = `Chuyển đổi số thập phân <span class="text-sky-600 font-code font-extrabold">${dec}</span> sang hệ Nhị Phân?`;
+                explanation = `Giải thích: Chia ${dec} cho 2 liên tục thu được dãy số dư từ dưới lên là ${correctAnswer}.`;
+
+                options.push(correctAnswer);
+                while (options.length < 4) {
+                    const wrong = (dec + Math.floor(Math.random() * 8) - 4).toString(2);
+                    if (wrong !== correctAnswer && !options.includes(wrong) && wrong.length > 0) {
+                        options.push(wrong);
+                    }
+                }
+
+            } else if (randomType === 'bin_to_dec') {
+                document.getElementById('quiz-type-badge').textContent = 'Chuyển Đổi: Nhị Phân → Thập Phân';
+                const dec = Math.floor(Math.random() * 30) + 2;
+                const bin = dec.toString(2);
+                correctAnswer = dec.toString(10);
+                questionText = `Chuyển đổi chuỗi nhị phân <span class="text-indigo-600 font-code font-extrabold">${bin}</span> sang hệ Thập Phân?`;
+                explanation = `Giải thích: Cộng các trọng số 2ⁿ ứng với bit 1 trong ${bin} thu được ${correctAnswer}.`;
+
+                options.push(correctAnswer);
+                while (options.length < 4) {
+                    const wrong = (dec + Math.floor(Math.random() * 10) - 5).toString();
+                    if (wrong !== correctAnswer && !options.includes(wrong) && parseInt(wrong) >= 0) {
+                        options.push(wrong);
+                    }
+                }
+
+            } else if (randomType === 'add_bin') {
+                document.getElementById('quiz-type-badge').textContent = 'Phép Tính: Cộng Nhị Phân';
+                const a = Math.floor(Math.random() * 12) + 1;
+                const b = Math.floor(Math.random() * 12) + 1;
+                const binA = a.toString(2);
+                const binB = b.toString(2);
+                correctAnswer = (a + b).toString(2);
+                questionText = `Tính tổng nhị phân: <span class="text-sky-600 font-code font-extrabold">${binA}</span> + <span class="text-sky-600 font-code font-extrabold">${binB}</span> = ?`;
+                explanation = `Giải thích: ${binA} (${a}) + ${binB} (${b}) = ${a + b} tương ứng ${correctAnswer} trong hệ nhị phân.`;
+
+                options.push(correctAnswer);
+                while (options.length < 4) {
+                    const wrong = (a + b + Math.floor(Math.random() * 6) - 3).toString(2);
+                    if (wrong !== correctAnswer && !options.includes(wrong) && wrong.length > 0) {
+                        options.push(wrong);
+                    }
+                }
+
+            } else {
+                document.getElementById('quiz-type-badge').textContent = 'Phép Tính: Nhân Nhị Phân';
+                const a = Math.floor(Math.random() * 7) + 1;
+                const b = Math.floor(Math.random() * 7) + 1;
+                const binA = a.toString(2);
+                const binB = b.toString(2);
+                correctAnswer = (a * b).toString(2);
+                questionText = `Tính tích nhị phân: <span class="text-indigo-600 font-code font-extrabold">${binA}</span> × <span class="text-indigo-600 font-code font-extrabold">${binB}</span> = ?`;
+                explanation = `Giải thích: ${binA} (${a}) × ${binB} (${b}) = ${a * b} tương ứng ${correctAnswer} trong hệ nhị phân.`;
+
+                options.push(correctAnswer);
+                while (options.length < 4) {
+                    const wrong = (a * b + Math.floor(Math.random() * 6) - 3).toString(2);
+                    if (wrong !== correctAnswer && !options.includes(wrong) && wrong.length > 0) {
+                        options.push(wrong);
+                    }
+                }
+            }
+
+            options.sort(() => Math.random() - 0.5);
+
+            quizState.currentQuestion = {
+                text: questionText,
+                correctAnswer: correctAnswer,
+                explanation: explanation
+            };
+
+            document.getElementById('quiz-question-text').innerHTML = questionText;
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt-btn p-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-800 font-code font-bold text-lg hover:border-sky-500 hover:text-sky-700 hover:bg-sky-50/50 transition text-center shadow-sm";
+                btn.textContent = opt;
+                btn.onclick = () => checkQuizAnswer(opt, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkQuizAnswer(selectedOpt, clickedBtn) {
+            if (quizState.isAnswered) return;
+            quizState.isAnswered = true;
+
+            const current = quizState.currentQuestion;
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            const allBtns = document.querySelectorAll('.quiz-opt-btn');
+
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.textContent === current.correctAnswer) {
+                    b.className = "quiz-opt-btn p-4 rounded-2xl bg-emerald-100 border-2 border-emerald-500 text-emerald-800 font-code font-extrabold text-lg text-center shadow-md";
+                }
+            });
+
+            quizState.completed++;
+
+            if (selectedOpt === current.correctAnswer) {
+                quizState.score += 10;
+                quizState.streak++;
+                clickedBtn.className = "quiz-opt-btn p-4 rounded-2xl bg-emerald-500 text-white border-2 border-emerald-600 font-code font-extrabold text-lg text-center shadow-md";
+
+                feedbackBox.className = "p-5 rounded-2xl text-sm font-medium bg-emerald-50 border border-emerald-200 text-emerald-900 space-y-1 block";
+                feedbackBox.innerHTML = `
+                    <div class="font-bold text-base flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Đúng rồi! (+10 điểm)
+                    </div>
+                    <div>${current.explanation}</div>
+                `;
+            } else {
+                quizState.streak = 0;
+                clickedBtn.className = "quiz-opt-btn p-4 rounded-2xl bg-rose-500 text-white border-2 border-rose-600 font-code font-extrabold text-lg text-center shadow-md";
+
+                feedbackBox.className = "p-5 rounded-2xl text-sm font-medium bg-rose-50 border border-rose-200 text-rose-900 space-y-1 block";
+                feedbackBox.innerHTML = `
+                    <div class="font-bold text-base flex items-center gap-2">
+                        <i class="fa-solid fa-circle-xmark text-rose-600"></i> Rất tiếc, chưa chính xác!
+                    </div>
+                    <div>Đáp án đúng là: <strong class="font-code font-bold">${current.correctAnswer}</strong>. ${current.explanation}</div>
+                `;
+            }
+
+            document.getElementById('quiz-score').textContent = quizState.score;
+            document.getElementById('quiz-streak').textContent = `${quizState.streak} 🔥`;
+            document.getElementById('quiz-count').textContent = quizState.completed;
+
+            document.getElementById('btn-next-question').classList.remove('hidden');
+        }
+
+        // --- UTILS: TOAST & CLIPBOARD ---
+        function copyToClipboard(elementId) {
+            const input = document.getElementById(elementId);
+            if (!input || !input.value) return;
+
+            input.select();
+            document.execCommand('copy');
+
+            const toast = document.getElementById('toast-notify');
+            document.getElementById('toast-text').textContent = `Đã sao chép: ${input.value}`;
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 2200);
+        }
+    </script>
+</body>
+</html>
